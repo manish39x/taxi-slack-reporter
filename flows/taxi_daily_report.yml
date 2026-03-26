@@ -1,0 +1,36 @@
+id: taxi_daily_report
+namespace: taxi.pipeline
+
+description: |
+  Daily NYC Taxi ETL pipeline — extract, transform,
+  load, and Slack report. Runs every day at 8 AM.
+
+triggers:
+  - id: daily_schedule
+    type: io.kestra.plugin.core.trigger.Schedule
+    cron: "0 8 * * *"
+
+tasks:
+  - id: run_pipeline
+    type: io.kestra.plugin.scripts.python.Commands
+    namespaceFiles:
+      enabled: true
+    workingDirectory: /flows
+    commands:
+      - pip install pandas sqlalchemy psycopg2-binary python-dotenv requests -q
+      - python pipeline/run.py "{{ trigger.date ?? execution.startDate | date('yyyy-MM-dd', offset='-1d') }}"
+
+errors:
+  - id: notify_failure
+    type: io.kestra.plugin.scripts.python.Commands
+    namespaceFiles:
+      enabled: true
+    commands:
+      - pip install requests python-dotenv -q
+      - |
+        python -c "
+        import sys, os
+        sys.path.insert(0, '/flows/pipeline')
+        from notify import send_error_alert
+        send_error_alert('{{ execution.startDate | date(\"yyyy-MM-dd\") }}', 'Pipeline execution failed')
+        "
