@@ -10,7 +10,7 @@ def main():
     date_arg = sys.argv[1] if len(sys.argv) > 1 else None
     if date_arg is None:
         import pandas as pd
-        date_arg = (pd.Timestamp.today() - pd.Timedelta(days=1)).strftime("%Y-%m-%d")
+        date_arg = (pd.Timestamp.today() - pd.Timedelta(days=850)).strftime("%Y-%m-%d")
 
     total_start = time.time()
     print(f"\n{'='*52}")

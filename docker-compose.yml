@@ -35,10 +35,8 @@ services:
     image: postgres:18
     volumes:
       - kestra_postgres_data:/var/lib/postgresql
-    environment:
-      POSTGRES_DB: kestra
-      POSTGRES_USER: kestra
-      POSTGRES_PASSWORD: k3str4
+    env_file:
+      - .env_encoded
     healthcheck:
       test: ["CMD-SHELL", "pg_isready -d $${POSTGRES_DB} -U $${POSTGRES_USER}"]
       interval: 30s
@@ -57,7 +55,10 @@ services:
       - kestra_data:/app/storage
       - /var/run/docker.sock:/var/run/docker.sock
       - kestra_tmp:/tmp/kestra-wd
+    env_file: .env_encoded
     environment:
+      # This tells Kestra to look for secrets in Environment Variables
+      KESTRA_SECRET_TYPE: env
       KESTRA_CONFIGURATION: |
         datasources:
           postgres:

@@ -25,7 +25,7 @@ def extract(target_date:str = None) -> pd.DataFrame:
   DEFAULTS to yesterday if not provided. 
   """
   if target_date is None:
-    target_date = (pd.Timestamp.today() - pd.Timedelta(days=1)).strftime("%Y-%m-%d")
+    target_date = (pd.Timestamp.today() - pd.Timedelta(days=850)).strftime("%Y-%m-%d")
   
   log(f"Extracting trips for date: {target_date}")
   start = time.time()
